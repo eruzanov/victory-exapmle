@@ -65,10 +65,12 @@ class App extends Component {
             style={{
               axis: {stroke: 'transparent'},
               tickLabels: {fontSize: 6},
-              grid: {stroke: 'transparent'}
+              grid: {stroke: 'transparent'},
+              ticks: {stroke: '#ECEFF1'}
             }}
             tickCount={DATA.length}
-            tickFormat={v => `2/${v / 10}`}
+            crossAxis={false}
+            tickFormat={v => `2/${v / 10 + 1}`}
           />
           <VictoryAxis
             dependentAxis
