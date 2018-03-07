@@ -1,35 +1,38 @@
 import React, {Component} from 'react';
-import {VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryStack, VictoryContainer} from 'victory';
+import zip from 'lodash/zip';
+import {VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryStack, VictoryLabel} from 'victory';
 
 const WIDTH = 800;
 const HEIGHT = 300;
 
 const DATA = [];
-let i = 30;
+let i = 31;
 while (i--) DATA.push({x: 10 * i, y: Math.round(Math.random() * 1000)});
+const maxData = Math.max.apply(null, DATA.map(item => item.y));
 
 let DATA_STACK = [];
-i = 30;
+i = 31;
 while (i--) DATA_STACK.push({x: 10 * i, y: -(Math.round(Math.random() * 500))});
 DATA_STACK = DATA_STACK.reverse();
+const minDataStack = Math.min.apply(
+  null,
+  zip(DATA_STACK, DATA_STACK, DATA_STACK).map(item => item.reduce((memo, i) => memo + i.y, 0))
+);
 
 const tickValues = (start = -900, stop = 900, step = 150) => {
   const result = [];
-  let index = start;
-  while (index < stop) {
+  const normalizeStart = start % step ? start - (start % step) - step : start;
+  const normalizeStop = stop % step ? stop - (stop % step) + step : stop;
+  let index = normalizeStart;
+  while (index <= normalizeStop) {
     result.push(index);
     index += step;
   }
   return result;
 };
 
-const NoDraw = () => null;
-
 class App extends Component {
   render() {
-    VictoryTheme.material.axis.style.grid.strokeDasharray = null;
-    VictoryTheme.material.axis.style.axis.stroke = 'transparent';
-    VictoryTheme.material.bar.style.data.fill = 'url(#grad-blue)';
     return (
       <div>
         <svg>
@@ -56,25 +59,40 @@ class App extends Component {
           width={WIDTH}
           height={HEIGHT}
           theme={VictoryTheme.material}
-          containerComponent={<VictoryContainer width={WIDTH} height={HEIGHT}/>}
         >
           <VictoryAxis
             offsetY={50}
-            gridComponent={<NoDraw/>}
+            style={{
+              axis: {stroke: 'transparent'},
+              tickLabels: {fontSize: 6},
+              grid: {stroke: 'transparent'}
+            }}
             tickCount={DATA.length}
             tickFormat={v => `2/${v / 10}`}
           />
           <VictoryAxis
             dependentAxis
-            tickValues={tickValues()}
+            tickValues={tickValues(minDataStack, maxData)}
+            tickLabelComponent={<VictoryLabel dx={40} dy={-5}/>}
+            style={{
+              axis: {stroke: 'transparent'},
+              tickLabels: {fontSize: 6},
+              ticks: {size: 50, stroke: '#ECEFF1'}
+            }}
           />
           <VictoryAxis
             dependentAxis
             orientation="right"
-            tickValues={tickValues()}
+            tickLabelComponent={<VictoryLabel dx={-40} dy={-5}/>}
+            tickValues={tickValues(minDataStack, maxData)}
             tickFormat={v => `${v / 100}%`}
+            style={{
+              axis: {stroke: 'transparent'},
+              tickLabels: {fontSize: 6},
+              ticks: {size: 50, stroke: '#ECEFF1'}
+            }}
           />
-          <VictoryBar data={DATA} fill="url(#data-grad)"/>
+          <VictoryBar data={DATA} style={{data: {fill: 'url(#grad-blue)'}}}/>
           <VictoryStack colorScale={['url(#grad-red)', 'url(#grad-orange)', 'url(#grad-yellow)']}>
             <VictoryBar data={DATA_STACK}/>
             <VictoryBar data={DATA_STACK}/>
