@@ -1,18 +1,18 @@
 import React, {Component} from 'react';
 import zip from 'lodash/zip';
-import {VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryStack, VictoryLabel} from 'victory';
+import {VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryStack, VictoryLabel, VictoryTooltip} from 'victory';
 
 const WIDTH = 800;
 const HEIGHT = 300;
 
 const DATA = [];
 let i = 31;
-while (i--) DATA.push({x: 10 * i, y: Math.round(Math.random() * 1000)});
+while (i--) DATA.push({x: 10 * i, y: Math.round(Math.random() * 1000), label: 'tooltip label'});
 const maxData = Math.max.apply(null, DATA.map(item => item.y));
 
 let DATA_STACK = [];
 i = 31;
-while (i--) DATA_STACK.push({x: 10 * i, y: -(Math.round(Math.random() * 500))});
+while (i--) DATA_STACK.push({x: 10 * i, y: -(Math.round(Math.random() * 500)), label: 'tooltip label'});
 DATA_STACK = DATA_STACK.reverse();
 const minDataStack = Math.min.apply(
   null,
@@ -94,11 +94,15 @@ class App extends Component {
               ticks: {size: 50, stroke: '#ECEFF1'}
             }}
           />
-          <VictoryBar data={DATA} style={{data: {fill: 'url(#grad-blue)'}}}/>
+          <VictoryBar
+            data={DATA}
+            style={{data: {fill: 'url(#grad-blue)'}}}
+            labelComponent={<VictoryTooltip/>}
+          />
           <VictoryStack colorScale={['url(#grad-red)', 'url(#grad-orange)', 'url(#grad-yellow)']}>
-            <VictoryBar data={DATA_STACK}/>
-            <VictoryBar data={DATA_STACK}/>
-            <VictoryBar data={DATA_STACK}/>
+            <VictoryBar data={DATA_STACK} labelComponent={<VictoryTooltip/>}/>
+            <VictoryBar data={DATA_STACK} labelComponent={<VictoryTooltip/>}/>
+            <VictoryBar data={DATA_STACK} labelComponent={<VictoryTooltip/>}/>
           </VictoryStack>
         </VictoryChart>
       </div>
